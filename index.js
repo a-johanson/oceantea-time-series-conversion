@@ -16,7 +16,7 @@ const localAddr = "127.0.0.1";
 
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "250mb"}));
 
 
 // input (as json in Body): 
