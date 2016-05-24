@@ -23,7 +23,7 @@ app.use(bodyParser.json({limit: "250mb"}));
 // {
 //   lat: float 
 //   lon: float
-//   ctpSeries: [[timestamp, conductivity, temperature, pressure]]
+//   inputSeries: [[timestamp, conductivity, temperature, pressure]]
 // }
 // in-situ conductivity [ mS/cm ]
 // in-situ temperature [deg C]
@@ -98,6 +98,21 @@ app.use(bodyParser.json({limit: "250mb"}));
 // gsw_sigma0  : potential density anomaly with reference pressure of 0
 
 
+app.get("/conversion", function(req, res) {
+	res.json({
+		input: ["conductivity", "temperature", "pressure"],
+		output: ["practicalSalinity",
+			"absoluteSalinity",
+			"potentialTemperature",
+			"conservativeTemperature",
+			"soundSpeed",
+			"potentialDensityAnomaly"]
+	});
+});
+
+function cleanValue(v) {
+	return (!v || Math.abs(v) > 1.0e6) ? 0 : v;
+}
 
 app.post("/conversion", function (req, res) {
 	if(!req.body.hasOwnProperty("lat")
@@ -108,8 +123,8 @@ app.post("/conversion", function (req, res) {
 	|| typeof req.body["lon"] !== "number"
 	|| req.body["lon"] < -180.0
 	|| req.body["lon"] > 180.0
-	|| !req.body.hasOwnProperty("ctpSeries")
-	|| !Array.isArray(req.body["ctpSeries"])) {
+	|| !req.body.hasOwnProperty("inputSeries")
+	|| !Array.isArray(req.body["inputSeries"])) {
 		res.status(400).send("Bad Request");
 		return;
 	}
@@ -125,7 +140,7 @@ app.post("/conversion", function (req, res) {
 	};
 	const lat = req.body["lat"];
 	const lon = req.body["lon"];
-	req.body["ctpSeries"].forEach(function(d) {
+	req.body["inputSeries"].forEach(function(d) {
 		if(!Array.isArray(d)
 		|| d.length < 4
 		|| typeof d[0] !== "number"
@@ -145,12 +160,12 @@ app.post("/conversion", function (req, res) {
 		const sound_speed = teos10._gsw_sound_speed(sa, ct, p);
 		const sigma0 = teos10._gsw_sigma0(sa, ct);
 		
-		resData.practicalSalinity.push(sp);
-		resData.absoluteSalinity.push(sa);
-		resData.potentialTemperature.push(pt);
-		resData.conservativeTemperature.push(ct);
-		resData.soundSpeed.push(sound_speed);
-		resData.potentialDensityAnomaly.push(sigma0);
+		resData.practicalSalinity.push(cleanValue(sp));
+		resData.absoluteSalinity.push(cleanValue(sa));
+		resData.potentialTemperature.push(cleanValue(pt));
+		resData.conservativeTemperature.push(cleanValue(ct));
+		resData.soundSpeed.push(cleanValue(sound_speed));
+		resData.potentialDensityAnomaly.push(cleanValue(sigma0));
 	});
 	
 	res.json(resData);
