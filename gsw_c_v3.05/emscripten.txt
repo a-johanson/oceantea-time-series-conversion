@@ -1,0 +1,53 @@
+
+
+*** Setup emscripten (stand alone version)
+
+# Fetch the latest registry of available tools.
+emsdk update
+
+# Download and install the latest SDK tools.
+emsdk install latest
+
+# Make the "latest" SDK "active"
+emsdk activate latest
+
+
+*** C Code
+
+//extern "C" {
+	double linearTransform(double in) {
+		double a = 5.5;
+		double b = 1.2;
+		
+		return a*in+b;
+	}
+//}
+
+
+*** Compile
+
+emcc -s EXPORTED_FUNCTIONS="['_linearTransform']" D:\work\emstest\test2.cpp
+
+emcc -O2 -s EXPORTED_FUNCTIONS="['_gsw_sp_from_c', '_gsw_sa_from_sp', '_gsw_ct_from_t', '_gsw_pt_from_ct', '_gsw_sound_speed', '_gsw_sigma0']" -o teos10.js "D:\Google Drive\Uni\FutureOcean\Data Analysis\TEOS-10\gsw_c_v3.05\gsw_oceanographic_toolbox.c" "D:\Google Drive\Uni\FutureOcean\Data Analysis\TEOS-10\gsw_c_v3.05\gsw_saar.c"
+
+
+*** Use in node
+
+const lib = require("./a.out.js");
+
+console.log(lib._linearTransform(5));
+
+
+*** Emscripten: Calling a C function that modifies array elements
+
+https://stackoverflow.com/questions/28202744/emscripten-calling-a-c-function-that-modifies-array-elements
+
+var Module = require(...);
+var ptr = Module.malloc(8);
+var view = Module.HEAPU8.subarray(ptr, ptr+8);
+var f = Module.cwrap("modify_array", "undefined", ["number"]);
+f(ptr);
+
+Cf. https://stackoverflow.com/questions/17883799/how-to-handle-passing-returning-array-pointers-to-emscripten-compiled-code?lq=1
+
+
