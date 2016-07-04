@@ -1,3 +1,17 @@
+// Copyright 2016 Arne Johanson
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 try {
 	process.chdir(__dirname);
 }
@@ -66,7 +80,6 @@ app.use(bodyParser.json({limit: "250mb"}));
 // gsw_ct_from_t : Conservative Temperature                 [deg C]
 
 
-
 // function gsw_pt_from_ct(sa,ct)  
 // sa     : Absolute Salinity                               [g/kg]
 // ct     : Conservative Temperature                        [deg C]
@@ -75,15 +88,12 @@ app.use(bodyParser.json({limit: "250mb"}));
 // gsw_pt_from_ct : potential temperature with              [deg C]
 //                  reference pressure of  0 dbar
 
-
 // function gsw_sound_speed(sa,ct,p)  
 // sa     : Absolute Salinity                               [g/kg]
 // ct     : Conservative Temperature (ITS-90)               [deg C]
 // p      : sea pressure                                    [dbar]
 // 
 // sound_speed  : speed of sound in seawater                [m/s]
-
-
 
 // function gsw_sigma0(sa,ct) 
 //  Calculates potential density anomaly with reference pressure of 0 dbar,
