@@ -26,7 +26,11 @@ const teos10 = require("./teos10"); // Compiled from gsw_c_v3.05 with emsdk-1.35
 
 
 const appPort = 3337;
-const localAddr = "127.0.0.1";
+const localAddr = "localhost";
+
+const acceptAllHosts = process.argv.includes("--acceptAllHosts");
+
+
 
 
 const app = express();
@@ -182,6 +186,6 @@ app.post("/conversion", function (req, res) {
 });
 
 
-app.listen(appPort, localAddr, function () {
+app.listen(appPort, acceptAllHosts ? null : localAddr, function () {
 	console.log("Conversion app listening on port " + appPort);
 });
